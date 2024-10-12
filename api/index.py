@@ -5,6 +5,8 @@ import time
 import requests
 from http.server import BaseHTTPRequestHandler
 
+from sqlalchemy import null
+
 
 def get_data():
     """微博热搜
@@ -41,12 +43,15 @@ def get_data():
             hot = '沸'
         if 'is_new' in data_item:
             hot = '新'
+        if 'label_name' in data_item:
+            if (data_item['label_name']) == '':
+                hot = '新'
 
         dic = {
             'title': data_item['note'],
             'url': 'https://s.weibo.com/weibo?q=%23' + data_item['word'] + '%23',
             'num': data_item['num'],
-            'hot': hot
+            'hot': data_item.get('label_name', 'hot') if data_item.get('label_name') else hot
         }
         data.append(dic)
 
